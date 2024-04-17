@@ -1,0 +1,22 @@
+on: [push, pull_request]
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.22.x]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '${{ matrix.go-version }}'
+
+      - uses: actions/checkout@v3
+      - name: Test
+        run: go test -race ./... -coverprofile=cover.out -covermode=atomic
+
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          profile: cover.out
